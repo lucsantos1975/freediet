@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="grid">
+    <div><h3>Alterar paciente</h3></div>
+    <div style="text-align: right;"><a class="secondary" href="{{ url_for('painel.dados_paciente', id_paciente=id_paciente) }}">Voltar</a></div>
+</div>
+
+{% include 'mensagem.html' %}
+
+<form method="POST" action="{{ url_for('painel.alterar_paciente', id_paciente=id_paciente) }}">
+    <fieldset>
+        <label>
+            <input type="text" name="nome" placeholder="Nome" value="{{ nome }}"/>
+        </label>
+
+        <label>
+            <input type="email" name="email" placeholder="E-mail" value="{{ email }}"/>
+        </label>
+    </fieldset>
+
+    Data de nascimento:
+    <fieldset role="group">
+        <input type="number" name="dia" min="1" max="31" value="{{ dia }}" placeholder="dia"/>
+        <input type="number" name="mes" min="1" max="12" value="{{ mes }}" placeholder="mês"/>
+        <input type="number" name="ano" min="1900" max="{{ ano_atual }}" value="{{ ano }}" placeholder="ano"/>
+    </fieldset>
+
+    <a role="button" href="#" onclick="this.closest('form').submit();return false;">Salvar alterações</a>
+
+    <fieldset>
+        <label>
+            <input type="hidden" name="id_paciente" value="{{ id_paciente }}"/>
+        </label>
+    </fieldset>
+</form>
+
+{% endblock %}

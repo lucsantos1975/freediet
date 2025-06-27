@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="grid">
+    <div>
+        {% block conteudo_coluna %}
+        {% endblock %}
+    </div>
+    <div class="centralizado">
+        <img src="{{ url_for('static', filename='img/comida.png') }}"/>
+    </div>
+</div>
+{% endblock %}

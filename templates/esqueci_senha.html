@@ -1,0 +1,18 @@
+{% extends "base_2colunas.html" %}
+
+{% block conteudo_coluna %}
+<h3>Esqueceu sua senha?</h3>
+{% include 'mensagem.html' %}
+<form method="POST" action="{{ url_for('login.esqueci_senha') }}">
+    <fieldset>
+        <label>
+            Preencha o seu e-mail de cadastro
+            <input type="email" name="email">
+        </label>
+        <label>
+            Você receberá via e-mail um link para criar uma nova senha.
+        </label>
+    </fieldset>
+    <input type="submit" value="Enviar"/>
+</form>
+{% endblock %}

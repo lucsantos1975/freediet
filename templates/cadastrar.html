@@ -1,0 +1,23 @@
+{% extends "base_2colunas.html" %}
+
+{% block conteudo_coluna %}
+<h3>Criar conta</h3>
+{% include 'mensagem.html' %}
+<form method="POST" action="/cadastrar">
+    <fieldset>
+        <label>
+            <input type="email" name="email" placeholder="E-mail">
+        </label>
+
+        <label>
+            <input type="text" name="nome" placeholder="Nome">
+        </label>
+
+        <label>
+            <input type="password" name="senha" placeholder="Senha">
+        </label>
+    </fieldset>
+
+    <input type="submit" value="Cadastrar"/>
+</form>
+{% endblock %}

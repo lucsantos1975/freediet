@@ -1,0 +1,10 @@
+{% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+        {% for categoria, mensagem in mensagens %}
+            {% set classe_mensagem = 'pico-background-red-500' if categoria == 'erro' else 'pico-background-green-500' %}
+            <article class="{{ classe_mensagem }}">
+                {{ mensagem }}
+            </article>
+        {% endfor %}
+    {% endif %}
+{% endwith %}

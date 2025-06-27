@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="grid">
+    <div><h3>{{ refeicao.descricao }} ({{ refeicao.horario.strftime("%H:%M") }})</h3></div>
+    <div style="text-align: right;"><a class="secondary" href="{{ url_for('painel.dados_paciente', id_paciente=paciente.id) }}">Voltar</a></div>
+</div>
+
+<p>Paciente: <strong>{{ paciente.nome }} ({{ calcular_idade(paciente.data_nascimento) }} anos)</strong></p>
+
+{% include 'mensagem.html' %}
+
+<h4>Alimentos</h4>
+
+<table id="tabela_alimentos">
+    <thead>
+        <tr>
+            <th>Descrição</th>
+            <th><nobr>Quantidade (g)</nobr></th>
+            <th><nobr>Proteínas (g)</nobr></th>
+            <th><nobr>Lipídeos (g)</nobr></th>
+            <th><nobr>Carboidratos (g)</nobr></th>
+            <th><nobr>Energia (kcal)</nobr></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alimento in dados_alimentos['alimentos'] %}
+        <tr>
+            <td>{{ alimento['descricao'] }}</td>
+            <td>{{ alimento['quantidade'] }}</td>
+            <td>{{ alimento['proteina'] }}</td>
+            <td>{{ alimento['lipideos'] }}</td>
+            <td>{{ alimento['carboidratos'] }}</td>
+            <td>{{ alimento['energia_kcal'] }}</td>
+            <td><a class="secondary" href="#" data-id="{{ alimento['id'] }}">Excluir</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>Total</td>
+            <td>{{ dados_alimentos['totais']['quantidade'] }}</td>
+            <td>{{ dados_alimentos['totais']['proteina'] }}</td>
+            <td>{{ dados_alimentos['totais']['lipideos'] }}</td>
+            <td>{{ dados_alimentos['totais']['carboidratos'] }}</td>
+            <td>{{ dados_alimentos['totais']['energia_kcal'] }}</td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+
+<a id="link_adicionar_alimento" href="#">Adicionar alimento</a>
+
+<dialog id="modal_alimentos">
+    <article>
+        <div class="grid">
+            <div><h4>Adicionar alimento</h4></div>
+            <div style="text-align: right;"><a class="secondary" href="#" onclick="this.closest('dialog').close();return false;">Fechar</a></div>
+        </div>
+        
+        <select name="grupo" aria-label="Selecione o grupo de alimentos..." required>
+            <option selected disabled value="">Selecione o grupo de alimentos...</option>
+            {% for item_grupo in grupos %}
+                <option value="{{ item_grupo.name }}">{{ item_grupo.value }}</option>
+            {% endfor %}
+        </select>
+        <select name="alimento"></select>
+        <input type="number" name="quantidade" value="" placeholder="Quantidade em gramas"/>
+        
+        <footer>
+            <a role="button" id="botao_adicionar" href="#">Adicionar</a>
+        </footer>
+    </article>
+</dialog>
+
+<script src="{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}"></script>
+<script>
+    $(document).ready(function() {
+        var dados_alimentos_grupo = [];
+        var tabela_alimentos_tbody = $("#tabela_alimentos tbody");
+        var tabela_alimentos_tfoot = $("#tabela_alimentos tfoot");
+        var links_excluir = $("#tabela_alimentos tbody td a.secondary");
+        var link_adicionar_alimento = $("#link_adicionar_alimento");
+        var modal_alimentos = $("#modal_alimentos");
+        var select_grupos = $("select[name='grupo']");
+        var select_alimentos = $("select[name='alimento']");
+        var input_quantidade = $("input[name='quantidade']");
+        var botao_adicionar = $("#botao_adicionar");
+
+        link_adicionar_alimento.on('click', function() {
+            select_grupos.val("");
+            select_alimentos.empty();
+            input_quantidade.val("");
+            modal_alimentos.showModal();
+        });
+
+        select_grupos.on('change', function() {
+            $.post("{{ url_for('painel.listar_alimentos') }}", {grupo: this.value}, function(data, status) {
+                dados_alimentos_grupo = data;
+                select_alimentos.empty();
+                select_alimentos.append($('<option>', {
+                    value: '',
+                    text: 'Selecione o alimento...',
+                    selected: true,
+                    disabled: true
+                }));
+                $.each(dados_alimentos_grupo, function(index, item) {
+                    select_alimentos.append($('<option>', {
+                        value: item.id,
+                        text: item.descricao
+                    }));
+                });
+            });
+        });
+
+        botao_adicionar.on('click', function() {
+            $.post("{{ url_for('painel.adicionar_alimento', id_refeicao=refeicao.id) }}", {id_alimento: select_alimentos.val(), quantidade: input_quantidade.val()}, function(data, status) {
+                if (status === "success") {
+                    modal_alimentos.close();
+                    tabela_alimentos_tbody.empty();
+                    tabela_alimentos_tfoot.empty();
+
+                    $.each(data['alimentos'], function(index, item) {
+                        tabela_alimentos_tbody.append("<tr><td>" + item['descricao'] + "</td><td>" + item['quantidade'] + "</td><td>" + item['proteina'] + "</td><td>" + item['lipideos'] + "</td><td>" + item['carboidratos'] + "</td><td>" + item['energia_kcal'] + "</td><td><a class=\"secondary\" href=\"#\" data-id=\"" + item['id'] + "\">Excluir</a></td></tr>")
+                    });
+
+                    tabela_alimentos_tfoot.append("<tr><td>Total</td><td>" + data['totais']['quantidade'] + "</td><td>" + data['totais']['proteina'] + "</td><td>" + data['totais']['lipideos'] + "</td><td>" + data['totais']['carboidratos'] + "</td><td>" + data['totais']['energia_kcal'] + "</td><td></td></tr>")
+
+                    bind_links_excluir();
+                }
+            });
+            
+        });
+
+        bind_links_excluir();
+
+    });
+
+    var bind_links_excluir = function() {
+        var tabela_alimentos_tbody = $("#tabela_alimentos tbody");
+        var tabela_alimentos_tfoot = $("#tabela_alimentos tfoot");
+        var links_excluir = $("#tabela_alimentos tbody td a.secondary");
+        links_excluir.on('click', function() {
+            $.post("{{ url_for('painel.excluir_alimento', id_refeicao=refeicao.id) }}", {id: $(this).data('id')}, function(data, status) {
+                if (status === "success") {
+                    tabela_alimentos_tbody.empty();
+                    tabela_alimentos_tfoot.empty();
+
+                    $.each(data['alimentos'], function(index, item) {
+                        tabela_alimentos_tbody.append("<tr><td>" + item['descricao'] + "</td><td>" + item['quantidade'] + "</td><td>" + item['proteina'] + "</td><td>" + item['lipideos'] + "</td><td>" + item['carboidratos'] + "</td><td>" + item['energia_kcal'] + "</td><td><a class=\"secondary\" href=\"#\" data-id=\"" + item['id'] + "\">Excluir</a></td></tr>")
+                    });
+
+                    tabela_alimentos_tfoot.append("<tr><td>Total</td><td>" + data['totais']['quantidade'] + "</td><td>" + data['totais']['proteina'] + "</td><td>" + data['totais']['lipideos'] + "</td><td>" + data['totais']['carboidratos'] + "</td><td>" + data['totais']['energia_kcal'] + "</td><td></td></tr>")
+                }
+
+                bind_links_excluir();
+            });
+        });
+    }
+
+    $.fn.showModal = function() {
+        el = $(this);
+        if (el.is('dialog')) {
+            el[0].showModal();
+        }
+        return el;
+    };
+
+    $.fn.close = function() {
+        el = $(this);
+        if (el.is('dialog')) {
+            el[0].close();
+        }
+        return el;
+    };
+</script>
+ 
+{% endblock %}

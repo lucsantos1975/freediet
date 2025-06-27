@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h3>Pacientes</h3>
+
+{% include 'mensagem.html' %}
+
+<div class="overflow-auto">
+    <table class="striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Idade</th>
+                <th>E-mail</th>
+                <th>Link de acesso</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paciente in pacientes %}
+            <tr>
+                <td>{{ paciente.nome }}</td>
+                <td>{{ calcular_idade(paciente.data_nascimento) }}</td>
+                <td>{{ paciente.email if paciente.email else "" }}</td>
+                <td>{{ url_for('painel.paciente', token=paciente.token_acesso, _external=True) }}</td>
+                <td><a href="{{ url_for('painel.dados_paciente', id_paciente=paciente.id) }}">Detalhes</a></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td><a href="{{ url_for('painel.novo_paciente') }}">Novo paciente</a></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+

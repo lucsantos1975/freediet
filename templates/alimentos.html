@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<hgroup>
+    <h3>Nutrientes por alimento</h3>
+    <p>Composição por 100g de parte comestível</p>
+</hgroup>
+
+
+<select name="grupo" aria-label="Selecione o grupo de alimentos..." required>
+    <option selected disabled value="">Selecione o grupo de alimentos...</option>
+    {% for item_grupo in grupos %}
+        <option value="{{ item_grupo.name }}">{{ item_grupo.value }}</option>
+    {% endfor %}
+</select>
+<select name="alimento"></select>
+
+<div class="grid">
+    <div>
+        <table class="striped">
+            <thead>
+                <th colspan="2" style="text-align: center;">Nutrientes</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Proteína</td>
+                    <td><span id="proteina">-</span></td>
+                </tr>
+                <tr>
+                    <td>Lipídeos totais</td>
+                    <td><span id="lipideos">-</span></td>
+                </tr>
+                <tr>
+                    <td>Carboidrato</td>
+                    <td><span id="carboidrato">-</span></td>
+                </tr>
+                <tr>
+                    <td>Energia</td>
+                    <td><span id="energia_kcal">-</span></td>
+                </tr>
+                <tr>
+                    <td>Energia</td>
+                    <td><span id="energia_kj">-</span></td>
+                </tr>
+                <tr>
+                    <td>Umidade</td>
+                    <td><span id="umidade">-</span></td>
+                </tr>
+                <tr>
+                    <td>Colesterol</td>
+                    <td><span id="colesterol">-</span></td>
+                </tr>
+                <tr>
+                    <td>Cinzas</td>
+                    <td><span id="cinzas">-</span></td>
+                </tr>
+                <tr>
+                    <td>Fibra alimentar</td>
+                    <td><span id="fibra_alimentar">-</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <table class="striped">
+            <thead>
+                <th colspan="2" style="text-align: center;">Minerais</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Cálcio</td>
+                    <td><span id="calcio">-</span></td>
+                </tr>
+                <tr>
+                    <td>Magnésio</td>
+                    <td><span id="magnesio">-</span></td>
+                </tr>
+                <tr>
+                    <td>Manganês</td>
+                    <td><span id="manganes">-</span></td>
+                </tr>
+                <tr>
+                    <td>Fósforo</td>
+                    <td><span id="fosforo">-</span></td>
+                </tr>
+                <tr>
+                    <td>Ferro</td>
+                    <td><span id="ferro">-</span></td>
+                </tr>
+                <tr>
+                    <td>Sódio</td>
+                    <td><span id="sodio">-</span></td>
+                </tr>
+                <tr>
+                    <td>Potássio</td>
+                    <td><span id="potassio">-</span></td>
+                </tr>
+                <tr>
+                    <td>Cobre</td>
+                    <td><span id="cobre">-</span></td>
+                </tr>
+                <tr>
+                    <td>Zinco</td>
+                    <td><span id="zinco">-</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <table class="striped">
+            <thead>
+                <th colspan="2" style="text-align: center;">Vitaminas</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>A (retinol)</td>
+                    <td><span id="retinol">-</span></td>
+                </tr>
+                <tr>
+                    <td>RE</td>
+                    <td><span id="re">-</span></td>
+                </tr>
+                <tr>
+                    <td>RAE</td>
+                    <td><span id="rae">-</span></td>
+                </tr>
+                <tr>
+                    <td>B1 (tiamina)</td>
+                    <td><span id="tiamina">-</span></td>
+                </tr>
+                <tr>
+                    <td>B2 (riboflavina)</td>
+                    <td><span id="riboflavina">-</span></td>
+                </tr>
+                <tr>
+                    <td>B6 (piridoxina)</td>
+                    <td><span id="piridoxina">-</span></td>
+                </tr>
+                <tr>
+                    <td>B3 (niacina)</td>
+                    <td><span id="niacina">-</span></td>
+                </tr>
+                <tr>
+                    <td>C (ácido ascórbico)</td>
+                    <td><span id="vitamina_c">-</span></td>
+                </tr>
+             </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}"></script>
+<script>
+    var alimentos_grupo = [];
+    $(document).ready(function() {
+        $("select[name='grupo']").on('change', function() {
+            $.post("{{ url_for('painel.listar_alimentos') }}", {grupo: this.value}, function(data, status) {
+                alimentos_grupo = data;
+                var $select = $("select[name='alimento']");
+                $select.empty();
+                $select.append($('<option>', {
+                    value: '',
+                    text: 'Selecione o alimento...',
+                    selected: true,
+                    disabled: true
+                }));
+                $.each(data, function(index, item) {
+                    $select.append($('<option>', {
+                        value: item.id,
+                        text: item.descricao
+                    }));
+                });
+
+                $("#proteina").html("-");
+                $("#lipideos").html("-");
+                $("#carboidrato").html("-");
+                $("#energia_kcal").html("-");
+                $("#energia_kj").html("-");
+                $("#umidade").html("-");
+                $("#colesterol").html("-");
+                $("#cinzas").html("-");
+                $("#fibra_alimentar").html("-");
+
+                $("#calcio").html("-");
+                $("#magnesio").html("-");
+                $("#manganes").html("-");
+                $("#fosforo").html("-");
+                $("#ferro").html("-");
+                $("#sodio").html("-");
+                $("#potassio").html("-");
+                $("#cobre").html("-");
+                $("#zinco").html("-");
+
+                $("#retinol").html("-");
+                $("#re").html("-");
+                $("#rae").html("-");
+                $("#tiamina").html("-");
+                $("#riboflavina").html("-");
+                $("#piridoxina").html("-");
+                $("#niacina").html("-");
+                $("#vitamina_c").html("-");
+            });
+        });
+        $("select[name='alimento']").on('change', function() {
+            var alimento_dados = alimentos_grupo.find(({id}) => id === parseInt(this.value));
+            
+            $("#proteina").html(alimento_dados.proteina ? "<strong>"+alimento_dados.proteina+"</strong> g" : "-");
+            $("#lipideos").html(alimento_dados.lipideos ? "<strong>"+alimento_dados.lipideos+"</strong> g" : "-");
+            $("#carboidrato").html(alimento_dados.carboidrato ? "<strong>"+alimento_dados.carboidrato+"</strong> g" : "-");
+            $("#energia_kcal").html(alimento_dados.energia_kcal ? "<strong>"+alimento_dados.energia_kcal+"</strong> kcal" : "-");
+            $("#energia_kj").html(alimento_dados.energia_kj ? "<strong>"+alimento_dados.energia_kj+"</strong> kJ" : "-");
+            $("#umidade").html(alimento_dados.umidade ? "<strong>"+alimento_dados.umidade+"</strong> %" : "-");
+            $("#colesterol").html(alimento_dados.colesterol ? "<strong>"+alimento_dados.colesterol+"</strong> mg" : "-");
+            $("#cinzas").html(alimento_dados.cinzas ? "<strong>"+alimento_dados.cinzas+"</strong> g" : "-");
+            $("#fibra_alimentar").html(alimento_dados.fibra_alimentar ? "<strong>"+alimento_dados.fibra_alimentar+"</strong> g" : "-");
+
+            $("#calcio").html(alimento_dados.calcio ? "<strong>"+alimento_dados.calcio+"</strong> mg" : "-");
+            $("#magnesio").html(alimento_dados.magnesio ? "<strong>"+alimento_dados.magnesio+"</strong> mg" : "-");
+            $("#manganes").html(alimento_dados.manganes ? "<strong>"+alimento_dados.manganes+"</strong> mg" : "-");
+            $("#fosforo").html(alimento_dados.fosforo ? "<strong>"+alimento_dados.fosforo+"</strong> mg" : "-");
+            $("#ferro").html(alimento_dados.ferro ? "<strong>"+alimento_dados.ferro+"</strong> mg" : "-");
+            $("#sodio").html(alimento_dados.sodio ? "<strong>"+alimento_dados.sodio+"</strong> mg" : "-");
+            $("#potassio").html(alimento_dados.potassio ? "<strong>"+alimento_dados.potassio+"</strong> mg" : "-");
+            $("#cobre").html(alimento_dados.cobre ? "<strong>"+alimento_dados.cobre+"</strong> mg" : "-");
+            $("#zinco").html(alimento_dados.zinco ? "<strong>"+alimento_dados.zinco+"</strong> mg" : "-");
+
+            $("#retinol").html(alimento_dados.retinol ? "<strong>"+alimento_dados.retinol+"</strong> mcg" : "-");
+            $("#re").html(alimento_dados.re ? "<strong>"+alimento_dados.re+"</strong> mcg" : "-");
+            $("#rae").html(alimento_dados.rae ? "<strong>"+alimento_dados.rae+"</strong> mcg" : "-");
+            $("#tiamina").html(alimento_dados.tiamina ? "<strong>"+alimento_dados.tiamina+"</strong> mg" : "-");
+            $("#riboflavina").html(alimento_dados.riboflavina ? "<strong>"+alimento_dados.riboflavina+"</strong> mg" : "-");
+            $("#piridoxina").html(alimento_dados.piridoxina ? "<strong>"+alimento_dados.piridoxina+"</strong> mg" : "-");
+            $("#niacina").html(alimento_dados.niacina ? "<strong>"+alimento_dados.niacina+"</strong> mg" : "-");
+            $("#vitamina_c").html(alimento_dados.vitamina_c ? "<strong>"+alimento_dados.vitamina_c+"</strong> mg" : "-");
+        });
+    });
+</script>
+{% endblock %}

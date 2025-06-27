@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pico.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pico.colors.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/extra.css') }}">
+    <title>FreeDiet</title>
+</head>
+
+<body>
+    <header class="container">
+        <nav>
+            <ul>
+                <li>
+                    <span class="pico-color-azure-650">Free</span><span class="pico-color-azure-500"><strong>Diet</strong></span>
+                </li>
+            </ul>
+            <ul>
+                {% if not current_user.is_authenticated %}
+                <li><a href="{{ url_for('painel.index') }}" class="secondary">Home</a></li>
+                <li><a href="{{ url_for('login.entrar') }}" class="secondary">Login</a></li>
+                <li><a href="{{ url_for('login.cadastrar') }}" class="secondary">Criar conta</a></li>
+                {% endif %}
+                {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('painel.principal') }}" class="secondary">Principal</a></li>
+                <li><a href="{{ url_for('painel.pacientes') }}" class="secondary">Pacientes</a></li>
+                <li><a href="{{ url_for('painel.alimentos') }}" class="secondary">Alimentos</a></li>
+                <li><a href="{{ url_for('login.sair') }}" class="secondary">Sair</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <hr/>
+    </header>
+    <main class="container">
+       {% block conteudo %}
+       {% endblock %}
+    </main>
+    <footer class="container">
+        <hr/>
+        <small>2025 - Luciano Santos - RU 3531890</small>
+    </footer>
+</body>
+
+</html>
