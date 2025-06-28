@@ -91,6 +91,7 @@ def esqueci_senha_post():
 
 @login.route('/nova_senha/<token>')
 def nova_senha(token):
+    print(token)
     usuario = Usuarios.query.filter_by(token_nova_senha=token).first()
 
     if usuario:
@@ -100,8 +101,8 @@ def nova_senha(token):
     return redirect(url_for('login.esqueci_senha'))
 
 
-@login.route('/nova_senha', methods=['POST'])
-def nova_senha_post():
+@login.route('/salvar_nova_senha', methods=['POST'])
+def salvar_nova_senha():
     token = request.form.get('token')
     usuario = Usuarios.query.filter_by(token_nova_senha=token).first()
 

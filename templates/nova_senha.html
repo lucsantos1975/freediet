@@ -3,7 +3,7 @@
 {% block conteudo_coluna %}
 <h3>{{ nome }}, cadastre sua nova senha</h3>
 {% include 'mensagem.html' %}
-<form method="POST" action="{{ url_for('login.nova_senha') }}">
+<form method="POST" action="{{ url_for('login.salvar_nova_senha') }}">
     <fieldset>
         <label>
             <input type="password" name="nova_senha" placeholder="Nova senha">

@@ -1,10 +1,23 @@
 {% extends "base.html" %}
 
 {% block conteudo %}
-<section>
-    <h3>
-        Bem-vindo, {{ nome }}!
-    </h3>
-</section>
+<h3>Bem-vindo, {{ nome }}!</h3>
+
+<article>
+    <header><h4>Pacientes</h4></header>
+    <p>Na tela de pacientes você pode cadastrar os dados de seus pacientes, e criar a dieta deles. 
+    Na dieta você pode cadastrar as refeições do paciente, por exemplo, café da manhã, almoço, lanche, etc.
+    Em cada refeição você irá definir os alimentos e as quantidades, para visualizar as somas dos nutrientes e energia.<br/>
+    <a href="{{ url_for('painel.pacientes') }}">Entrar na tela de pacientes</a></p>
+</article>
+
+<article>
+    <header><h4>Tabela Brasileira de Composição dos Alimentos - TACO</h4></header>
+    <p>Na tela de alimentos você pode consultar a composição completa dos alimentos, categorizados por grupos. 
+    São apresentados os macro nutrientes, como proteínas, lipídeos e carboidratos, bem como a quantidade de energia em
+    kcal e kJ, para cada 100 gramas de parte comestível. Não são apresentados os minerais e vitaminas.<br/>
+    <a href="{{ url_for('painel.alimentos') }}">Consultar a tabela de alimentos</a></p>
+</article>
+
 {% endblock %}
 
