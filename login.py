@@ -132,6 +132,7 @@ def enviar_token(email, nome, token):
                   sender=app.config['MAIL_DEFAULT_SENDER'],
                   recipients=[email])
     
-    msg.body = f"Olá {nome}! Recebemos uma solicitação de alteração de senha.\n\nUse o link abaixo para alterar a sua senha:\nhttp://127.0.0.1:5000/nova_senha/{token}\n\nSe você não solicitou alteração de senha, por favor desconsidere essa mensagem.\n\nAté mais!\nEquipe FreeDiet"
+    link_nova_senha = url_for('login.nova_senha', token=token, _external=True)
+    msg.body = f"Olá {nome}! Recebemos uma solicitação de alteração de senha.\n\nUse o link abaixo para alterar a sua senha:\n{link_nova_senha}\n\nSe você não solicitou alteração de senha, por favor desconsidere essa mensagem.\n\nAté mais!\nEquipe FreeDiet"
     mail.send(msg)
 
